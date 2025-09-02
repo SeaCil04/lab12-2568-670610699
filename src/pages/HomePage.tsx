@@ -20,6 +20,7 @@ interface Task {
   description: string;
   isDone: boolean;
   dueDate: Date | null;
+  doneAt?: string;
 }
 
 export default function HomePage() {
@@ -76,13 +77,21 @@ export default function HomePage() {
   // Toggle done
   const toggleDoneTask = (taskId: string) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, isDone: !t.isDone } : t))
+      prev.map((t) =>
+        t.id === taskId
+          ? {
+              ...t,
+              isDone: !t.isDone,
+              doneAt: !t.isDone ? new Date().toLocaleString() : undefined,
+            }
+          : t
+      )
     );
   };
 
   return (
     <Container size="sm" py="lg">
-      <Stack align="center">
+      <Stack align="center" >
         <Title order={2}>Todo List</Title>
         <Text size="sm" c="dimmed">
           All : {tasks.length} | Done : {tasks.filter((t) => t.isDone).length}
@@ -102,7 +111,6 @@ export default function HomePage() {
                   >
                     {task.title}
                   </Text>
-
                   <Text size="sm" c="dimmed">
                     {task.description}
                   </Text>
@@ -112,31 +120,30 @@ export default function HomePage() {
                     </Text>
                   )}
                   {/* แสดง Date & Time */}
-                  <Text size="xs" c="gray">
-                    Done at:
-                  </Text>
+                  {task.isDone && (
+                    <Text
+                      size="xs"
+                      mt="sm"
+                      c= "tanakrit"
+                    >
+                      Done at: {task.doneAt}
+                    </Text>
+                  )}
                 </Stack>
                 {/* แสดง Button Done & Button Delete */}
                 <Group>
-                  <Button
-                    style={{
-                      backgroundColor: "#71c32fda",
-                      color: "#dce6e7ff",
-                    }}
+                  <Checkbox
+                    checked={task.isDone}
+                    onChange={() => toggleDoneTask(task.id)}
+                  />
+                  <Text size = "sm">Done</Text>
+                  <ActionIcon
+                    color="red"
                     variant="light"
-                    size="xs"
-                    onClick={() => toggleDoneTask(task.id)}
-                  >
-                    Done
-                  </Button>
-                  <Button
-                    color="chanadda"
-                    variant="light"
-                    size="xs"
                     onClick={() => deleteTask(task.id)}
                   >
-                    Delete
-                  </Button>
+                    <IconTrash size={20} />
+                  </ActionIcon>
                 </Group>
               </Group>
             </Card>
